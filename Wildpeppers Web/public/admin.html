@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html class="h-100">
+
+<head>
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>-->
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css">
+
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css">-->
+
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body {
+            font-size: 12px;
+            overflow: hidden;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+        }
+
+        main {
+            padding: 2rem 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="admin_left_navigation">
+        <div class="app_name">Wildpeppers</div>
+        <a class="navigation_items is-active" id="default" onclick="switchView('views/home.html')" href="#"><i
+                class="far fa-home"></i>Home</a>
+
+        <a class="navigation_items" onclick="switchView('views/images.html')" href="#"><i
+                class="far fa-images"></i>Images</a>
+
+        <a class="navigation_items" onclick="switchView('views/categories.html')" href="#"><i
+                class="far fa-th-list"></i>Categories</a>
+        <span class="navigation_indicator"></span>
+    </nav>
+
+    <main id="container"></main>
+
+    <script src="js/app.js"></script>
+    <script>
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (!user) {
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+
+</html>

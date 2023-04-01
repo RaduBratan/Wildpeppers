@@ -1,0 +1,286 @@
+<style>
+    body {
+        font-family: "Rubik", sans-serif;
+    }
+</style>
+
+<!--<h2>IMAGES</h2>
+    
+<hr />-->
+
+<!--<div class="row">
+    <div class="col-lg-3">
+
+        <h4>Add a new wallpaper</h4>
+
+        <form id="image-form">
+
+            <div class="form-group">
+                <label for="category">Select a category</label>
+                <select id="category" class="form-control"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" />
+                <div class="invalid-feedback">Enter a name for your wallpaper</div>
+            </div>
+
+            <div class="form-group">
+                <label for="desc">Description</label>
+                <input type="text" class="form-control" id="desc" />
+                <div class="invalid-feedback">Enter a description for your wallpaper</div>
+            </div>
+
+            <div class="form-group">
+                <label for="wallpaper">Image</label>
+                <input type="file" class="form-control" id="wallpaper" />
+                <div class="invalid-feedback">Choose a valid image for your wallpaper</div>
+            </div>
+
+            <div class="form-group">
+                <div class="progress">
+                    <div class="progress-bar" id="progress" style="width: 0%">0%</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="button" id="btn-save" class="btn btn-primary">Save wallpaper</button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="col-lg-9">
+        <img id="img-wallpaper" width="500" height="600" />
+    </div>
+</div>-->
+
+<div class="header">
+    <h1>Images</h1>
+</div>
+
+<div class="big-container">
+    <div class="all-fields" id="image-form">
+        <div class="form-type1">
+            <div class="popup">
+                <div class="label">Select category</div>
+            </div>
+            <div class="invalid-feedback if1">Choose a category for your wallpaper</div>
+        </div>
+
+        <div class="form-type1">
+            <div class="text-group">
+                <input class="text-field" id="title" type="text" required />
+                <label class="form-label" for="title">Title</label>
+            </div>
+            <div class="invalid-feedback if2">Enter a name for your wallpaper</div>
+        </div>
+
+        <div class="form-type1">
+            <div class="text-group">
+                <input class="text-field" id="desc" type="text" required />
+                <label class="form-label" for="desc">Description</label>
+            </div>
+            <div class="invalid-feedback if3">Enter a description for your wallpaper</div>
+        </div>
+
+        <div class="form-type1">
+            <div class="file-select">
+                <div class="file-select-button" id="fileName">Choose file</div>
+                <div class="file-select-name" id="noFile">No file chosen...</div>
+                <input type="file" name="chooseFile" id="wallpaper">
+            </div>
+            <div class="invalid-feedback if4">Choose a valid image for your wallpaper</div>
+        </div>
+
+        <!--<div class="progress">
+            <div class="progress-bar" id="progress" style="width: 0%">0%</div>
+        </div>-->
+
+        <button class="save-button" id="btn-save">Save wallpaper</button>
+    </div>
+
+    <div class="image-view">
+        <img id="img-wallpaper" width="270" height="480" />
+    </div>
+</div>
+
+<div class="overlay">
+    <div class="menu" id="category"></div>
+</div>
+
+
+<script>
+    //----------------------------------------------------------------------------------preview the wallpapers
+    function previewWallpaper(thumbnail) {
+        if (thumbnail.files && thumbnail.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $("#img-wallpaper").attr('src', e.target.result);
+            }
+            reader.readAsDataURL(thumbnail.files[0]);
+        }
+    }
+
+    $("#wallpaper").change(function () {
+        previewWallpaper(this);
+    });
+
+    var dbCategories = firebase.database().ref("categories"); //db = database
+
+    //----------------------------------------------------------------------------------add category name to the list
+    dbCategories.once("value").then(function (categories) {
+        categories.forEach(function (category) {
+            $("#category").append("<option id='menu-item' value='" + category.key + "'>" + category.key + "</option>");
+        });
+    }); //was: $("#category").append("<div id='menu-item'>" + category.key + "</div>");
+
+    var validImageTypes = ["image/gif", "image/jpeg", "image/png"];
+
+    $("#btn-save").click(function () {
+        //----------------------------------------------------------------------------------handle the error messages
+        $(".if1").removeClass("is-invalid");
+        $(".if2").removeClass("is-invalid");
+        $(".if3").removeClass("is-invalid");
+        $(".if4").removeClass("is-invalid");
+
+        var category = $("#menu-item").val();
+        var title = $("#title").val();
+        var desc = $("#desc").val();
+        var wallpaper = $("#wallpaper").prop("files")[0];
+
+        if (!category) {
+            $(".if1").addClass("is-invalid");
+        } else {
+            $(".if1").removeClass("is-invalid");
+        }
+
+        if (!title) {
+            $(".if2").addClass("is-invalid");
+        } else {
+            $(".if2").removeClass("is-invalid");
+        }
+
+        if (!desc) {
+            $(".if3").addClass("is-invalid");
+        } else {
+            $(".if3").removeClass("is-invalid");
+        }
+
+        if (!wallpaper) {
+            $(".if4").addClass("is-invalid");
+        } else {
+            $(".if4").removeClass("is-invalid");
+        }
+
+        if ($.inArray(wallpaper["type"], validImageTypes) < 0) {
+            $(".if4").addClass("is-invalid");
+        } else {
+            $(".if4").removeClass("is-invalid");
+        }
+
+        //var category = $("#category").val();
+        var name = wallpaper["name"];
+        var ext = name.substring(name.lastIndexOf("."), name.length);
+        var uploadDate = new Date().getTime();
+        var storageRef = firebase.storage().ref(category + "/" + uploadDate + ext);
+        var uploadTask = storageRef.put(wallpaper);
+
+        uploadTask.on("state_changed",
+            //----------------------------------------------------------------------------------handle the progress bar
+            /*function progress(snapshot) {
+                var percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                $("#progress").html(Math.round(percentage) + "%");
+                $("#progress").attr("style", "width: " + percentage + "%");
+            },*/
+
+            function error(err) {
+            },
+
+            //----------------------------------------------------------------------------------add the wallpaper to the database
+            function complete() {
+                uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                    var database1 = firebase.database().ref("categories_with_images").child(category);
+                    var database2 = firebase.database().ref("all_images_list"); //fara .child(category), imaginea apare in folderul "images", fara sa fie pusa in subfolderul categoriei care apartine
+
+                    var imageid1 = database1.push().key;
+                    var imageid2 = database2.push().key;
+
+                    var image = {
+                        "url": downloadURL,
+                        "title": title,
+                        "desc": desc
+                    };
+
+                    database1.child(imageid1).set(image, function (err) {
+                        resetForm();
+                    });
+
+                    database2.child(imageid2).set(image, function (err) {
+                        resetForm();
+                    }); //ba hai ca merge si asa, nu stiu cum sa fac altfel; am incercat cu && dar nu mi-a mers, deci mai simplu dau resetForm de 2 ori ca n-are nimic daca fac asta
+                });
+            }
+        );
+
+    });
+
+    //----------------------------------------------------------------------------------reset the forms to use them again
+    function resetForm() {
+        $("#image-form")[0].reset();
+        $("#img-wallpaper").attr("src", "");;
+        $("#progress").html("Completed");
+    }
+
+    //----------------------------------------------------------------------------------open the category popup
+    $(function () {
+        $(".label").on("click", function () {
+            $(".overlay").removeClass("close");
+            $(".overlay").addClass("open");
+        });
+
+        $("#menu-item").on("click", function () {
+            $(this)
+                .parent()
+                .parent()
+                .addClass("close")
+                .children(".label")
+            setTimeout(() => {
+                $(this).removeClass("open");
+            }, 400);
+            $(".label").text($(this).text());
+            //$(".label").text(category.key);
+        });
+
+        $(document).on("keyup", function (event) {
+            if ((event.keyCode || event.which) === 27) {
+                $(".overlay").addClass("close");
+                setTimeout(() => {
+                    $(".overlay").removeClass("open");
+                }, 400);
+            }
+        });
+
+        $(document).on("click", function (event) {
+            if ($(event.target).closest(".label").length === 0) {
+                $(".overlay").addClass("close");
+                setTimeout(() => {
+                    $(".overlay").removeClass("open");
+                }, 400);
+            }
+        });
+    });
+
+    //----------------------------------------------------------------------------------view the image path
+    $("#wallpaper").bind("change", function () {
+        var filename = $("#wallpaper").val();
+        if (/^\s*$/.test(filename)) {
+            $("#noFile").text("No file chosen...");
+        } else {
+            $("#noFile").text(filename.replace("C:\\fakepath\\", ""));
+        }
+    });
+</script>

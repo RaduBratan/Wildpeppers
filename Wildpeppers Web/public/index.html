@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css">
+    <link rel="stylesheet" href="https://static.fontawesome.com/css/fontawesome-app.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body {
+            font-family: "Rubik", sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="log_in_container">
+        <div class="log_in_container_left_section">
+            <div class="welcome_message">
+                <h2 class="log_in_animation a1">Welcome back</h2>
+                <h4 class="log_in_animation a2">Log in to your account</h4>
+            </div>
+            <div class="log_in_form">
+                <div class="input_field_container log_in_animation a3">
+                    <input class="input_field" id="email" type="e-mail" required>
+                    <label class="input_field_label" for="email">Email</label>
+                    <span>@gmail.com</span>
+                </div>
+                <div class="input_field_container log_in_animation a4">
+                    <input class="password input_field" id="password" type="password" maxlength="16" required />
+                    <label class="input_field_label" for="password">Password</label>
+                    <span toggle="#password" class="far fa-eye show_password" id="span-show-password"></span>
+                </div>
+                <button class="log_in_button log_in_animation a6" id="btn-login">Log in</button>
+            </div>
+        </div>
+        <div class="log_in_container_right_section">
+            <div class="diagonal_scroll background_transition_animation"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                window.location.href = "admin.html";
+            }
+        });
+    </script>
+</body>
+
+</html>
